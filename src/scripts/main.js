@@ -67,7 +67,11 @@
     .then((res) => notification(body, ['success'], res))
     .catch((_err) => notification(body, ['error'], _err.message));
 
-  secondPromise.then((res) => notification(body, ['success'], res));
+  secondPromise
+    .then((res) => notification(body, ['success'], res))
+    .catch((_err) => notification(body, ['error'], _err.message));
 
-  thirdPromise.then((res) => notification(body, ['success'], res));
+  thirdPromise
+    .then((res) => notification(body, ['success'], res))
+    .catch((_err) => notification(body, ['error'], _err.message));
 })();
