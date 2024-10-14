@@ -3,9 +3,6 @@
 (() => {
   const body = document.querySelector('body');
 
-  let left = false;
-  let right = false;
-
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
   });
@@ -22,41 +19,47 @@
   const firstPromise = new Promise((resolve, reject) => {
     document.addEventListener('click', () => {
       resolve('First promise was resolved');
-      left = true;
     });
 
     setTimeout(() => {
-      if (!left) {
-        reject(new Error('First promise was rejected'));
-      }
+      reject(new Error('First promise was rejected'));
     }, 3000);
   });
 
   const secondPromise = new Promise((resolve) => {
-    document.addEventListener('mousedown', (e) => {
-      if (e.button === 0) {
-        left = true;
-        resolve('Second promise was resolved');
-      }
+    const handleClick = (e) => {
+      e.preventDefault();
 
-      if (e.button === 2) {
-        right = true;
+      resolve('Second promise was resolved');
+    };
 
-        resolve('Second promise was resolved');
-      }
-    });
+    document.addEventListener('click', handleClick);
+    document.addEventListener('contextmenu', handleClick);
   });
 
   const thirdPromise = new Promise((resolve) => {
     let isResolved = false;
+    let left = false;
+    let right = false;
 
-    document.addEventListener('mousedown', (e) => {
-      if (e.button === 0 || e.button === 2) {
-        if (left && right && !isResolved) {
-          isResolved = true;
-          resolve('Third promise was resolved');
-        }
+    const checkCLicks = () => {
+      if (left && right && !isResolved) {
+        isResolved = true;
+
+        resolve('Third promise was resolved');
       }
+    };
+
+    document.addEventListener('click', () => {
+      left = true;
+      checkCLicks();
+    });
+
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      right = true;
+
+      checkCLicks();
     });
   });
 
@@ -66,7 +69,5 @@
 
   secondPromise.then((res) => notification(body, ['success'], res));
 
-  thirdPromise.then((res) => {
-    notification(body, ['success'], res);
-  });
+  thirdPromise.then((res) => notification(body, ['success'], res));
 })();
